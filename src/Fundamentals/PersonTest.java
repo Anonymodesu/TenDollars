@@ -1,4 +1,4 @@
-package Fundamentals;
+	package Fundamentals;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,6 +36,10 @@ class PersonTest {
 		aiai.setParentOf(aurora);
 		
 		dudu.setParentOf(qinqin);
+		
+		assertThrows(IllegalArgumentException.class, () -> {
+			dudu.setParentOf(qinqin);
+		});
 		
 		assertSetEquals(Arrays.asList(jack, aiai, ten, jackdon, freya), aurora.getAncestors());
 		assertSetEquals(Arrays.asList(ten, jackdon, freya), jack.getAncestors());
