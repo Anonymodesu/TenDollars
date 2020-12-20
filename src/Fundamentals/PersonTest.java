@@ -58,5 +58,40 @@ class PersonTest {
 		assertSetEquals(Arrays.asList(jackdon, freya, ten, dudu, jack, aurora, qinqin, aiai), dudu.getFamilyTree());
 
 	}
+	
+	@Test
+	void testStudent() {
+		Student dudu = new Student("Dudu", Person.Gender.Male, 3);
+		dudu.enrol("Singing");
+		
+		assertThrows(IllegalArgumentException.class, () -> {
+			dudu.enrol("Singing");
+		});
+		
+		assertThrows(IllegalArgumentException.class, () -> {
+			dudu.complete("Dancing", 100);
+		});
+		
+		assertThrows(IllegalArgumentException.class, () -> {
+			dudu.complete("Singing", 101);
+		});
+		
+		assertThrows(IllegalStateException.class, () -> {
+			dudu.getWAM();
+		});
+		
+		dudu.enrol("Dancing");
+		dudu.enrol("Playing Video Games");
+		dudu.enrol("Watching Stupid Videos");
+		dudu.enrol("Cooking");
+		
+		dudu.complete("Singing", 100);
+		dudu.complete("Dancing", 90);
+		dudu.complete("Playing Video Games", 80);
+		dudu.complete("Watching Stupid Videos", 70);
+		dudu.complete("Cooking", 60);
+		
+		assertEquals(dudu.getWAM(), 80);
+	}
 
 }
