@@ -15,6 +15,10 @@ public class Subject {
 	final Map<Student, Integer> finishedStudents;
 	
 	Subject(String name, String code, int creditPoints) {
+		if(creditPoints < 1) {
+			throw new IllegalArgumentException(String.format("%s has fewer than 1 credit point", name));
+		}
+		
 		this.name = name;
 		this.code = code;
 		this.creditPoints = creditPoints;

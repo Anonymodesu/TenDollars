@@ -104,6 +104,10 @@ class PersonTest {
 		Subject momo = new Subject("Momo stuff", "MOMO9999", 50);
 		Subject chacha = new Subject("Chacha stuff", "CHCH9999", 50);
 		
+		assertThrows(IllegalArgumentException.class, () -> {
+			new Subject("FOobar", "rjeit3495", 0);
+		});
+		
 		Student jackdon = new Student("Jackdon", Person.Gender.Male, 24);
 		Student freya = new Student("Freya", Person.Gender.Female, 23);
 		Student aiai = new Student("Jackdon", Person.Gender.Female, 25);
@@ -120,6 +124,7 @@ class PersonTest {
 		assertSetEquals(Arrays.asList(jackdon), freya.getClassmates(momo));
 		assertSetEquals(Arrays.asList(aiai), freya.getClassmates(chacha));
 		assertSetEquals(Arrays.asList(aiai), freya.getClassmates(chacha));
+		assertSetEquals(Arrays.asList(aiai, jackdon), freya.getClassmates());
 		
 		jackdon.complete(momo, 80);
 		freya.complete(momo, 90);
