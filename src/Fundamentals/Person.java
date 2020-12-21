@@ -21,7 +21,7 @@ public class Person {
 	private List<Person> children;
 	
 	public Person(String name) {
-		this(name, Gender.Male, 0);
+		this(name, Gender.Male);
 	}
 	
 	public Person(String name, Gender gender) {

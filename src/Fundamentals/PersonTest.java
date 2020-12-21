@@ -2,7 +2,6 @@
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -61,37 +60,74 @@ class PersonTest {
 	
 	@Test
 	void testStudent() {
+		Subject singing = new Subject("Singing", "SING1011", 1);
+		Subject dancing = new Subject("Dancing", "DANC1011", 2);
+		Subject playing = new Subject("Playing Video Games", "PLAY1011", 3);
+		Subject watching = new Subject("Watching Stupid Videos", "WACH1011", 4);
+		Subject cooking = new Subject("Cooking", "COOK1011", 6);
+		
 		Student dudu = new Student("Dudu", Person.Gender.Male, 3);
-		dudu.enrol("Singing");
+		dudu.enrol(singing);
 		
 		assertThrows(IllegalArgumentException.class, () -> {
-			dudu.enrol("Singing");
+			dudu.enrol(singing);
 		});
 		
 		assertThrows(IllegalArgumentException.class, () -> {
-			dudu.complete("Dancing", 100);
+			dudu.complete(dancing, 100);
 		});
 		
 		assertThrows(IllegalArgumentException.class, () -> {
-			dudu.complete("Singing", 101);
+			dudu.complete(singing, 101);
 		});
 		
 		assertThrows(IllegalStateException.class, () -> {
 			dudu.getWAM();
 		});
 		
-		dudu.enrol("Dancing");
-		dudu.enrol("Playing Video Games");
-		dudu.enrol("Watching Stupid Videos");
-		dudu.enrol("Cooking");
+		dudu.enrol(dancing);
+		dudu.enrol(playing);
+		dudu.enrol(watching);
+		dudu.enrol(cooking);
 		
-		dudu.complete("Singing", 100);
-		dudu.complete("Dancing", 90);
-		dudu.complete("Playing Video Games", 80);
-		dudu.complete("Watching Stupid Videos", 70);
-		dudu.complete("Cooking", 60);
+		dudu.complete(singing, 100);
+		dudu.complete(dancing, 90);
+		dudu.complete(playing, 80);
+		dudu.complete(watching, 70);
+		dudu.complete(cooking, 60);
 		
-		assertEquals(dudu.getWAM(), 80);
+		assertEquals(dudu.getWAM(), 72.5);
+	}
+	
+	@Test
+	void testSubject() {
+		Subject momo = new Subject("Momo stuff", "MOMO9999", 50);
+		Subject chacha = new Subject("Chacha stuff", "CHCH9999", 50);
+		
+		Student jackdon = new Student("Jackdon", Person.Gender.Male, 24);
+		Student freya = new Student("Freya", Person.Gender.Female, 23);
+		Student aiai = new Student("Jackdon", Person.Gender.Female, 25);
+		
+		jackdon.enrol(momo);
+		freya.enrol(momo);
+		freya.enrol(chacha);
+		aiai.enrol(chacha);
+		
+		assertThrows(IllegalStateException.class, () -> {
+			momo.getAverageGrade();
+		});
+		
+		assertSetEquals(Arrays.asList(jackdon), freya.getClassmates(momo));
+		assertSetEquals(Arrays.asList(aiai), freya.getClassmates(chacha));
+		assertSetEquals(Arrays.asList(aiai), freya.getClassmates(chacha));
+		
+		jackdon.complete(momo, 80);
+		freya.complete(momo, 90);
+		freya.complete(chacha, 90);
+		aiai.complete(chacha, 100);
+		
+		assertEquals(85, momo.getAverageGrade());
+		assertEquals(95, chacha.getAverageGrade());
 	}
 
 }
