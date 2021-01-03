@@ -24,18 +24,20 @@ public class Student extends Person {
 		return subjects;
 	}
 	
-	public void enrol(Subject subject) {
-		if(currentlyStudying.contains(subject) || finishedStudying.keySet().contains(subject)) {
-			throw new IllegalArgumentException(String.format("%s is already studying %s", getName(), subject));
+	void enrol(Subject subject) {
+		if(currentlyStudying.contains(subject)) {
+			throw new IllegalStateException(String.format("%s is already studying %s", getName(), subject));
+		} else if(finishedStudying.keySet().contains(subject)) {
+			throw new IllegalStateException(String.format("%s has already completed %s", getName(), subject));
 		}
 		
 		currentlyStudying.add(subject);
 		subject.enrolledStudents.add(this);
 	}
 	
-	public void complete(Subject subject, int grade) {
+	void complete(Subject subject, int grade) {
 		if(!currentlyStudying.contains(subject)) {
-			throw new IllegalArgumentException(String.format("%s isn't studying %s", getName(), subject));
+			throw new IllegalStateException(String.format("%s isn't studying %s", getName(), subject));
 		} else if(grade < 0 || grade > 100) {
 			throw new IllegalArgumentException("Grade must be between 0 and 100");
 		}
@@ -86,6 +88,10 @@ public class Student extends Person {
 		}
 		students.remove(this);
 		return new ArrayList<Student>(students);
+	}
+	
+	public boolean currentlyStudies(Subject subject) {
+		return currentlyStudying.contains(subject);
 	}
 	
 	@Override

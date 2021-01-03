@@ -69,20 +69,20 @@ class PersonTest {
 		Student dudu = new Student("Dudu", Person.Gender.Male, 3);
 		dudu.enrol(singing);
 		
-		assertThrows(IllegalArgumentException.class, () -> {
-			dudu.enrol(singing);
-		});
-		
-		assertThrows(IllegalArgumentException.class, () -> {
-			dudu.complete(dancing, 100);
-		});
-		
-		assertThrows(IllegalArgumentException.class, () -> {
-			dudu.complete(singing, 101);
+		assertThrows(IllegalStateException.class, () -> {
+			dudu.enrol(singing); // dudu is already enrolled in singing
 		});
 		
 		assertThrows(IllegalStateException.class, () -> {
-			dudu.getWAM();
+			dudu.complete(dancing, 100); // dudu isnt enrolled in dancing
+		});
+		
+		assertThrows(IllegalArgumentException.class, () -> {
+			dudu.complete(singing, 101); // grade must be between 0 and 100
+		});
+		
+		assertThrows(IllegalStateException.class, () -> {
+			dudu.getWAM(); // dudu hasn't completed any subjects
 		});
 		
 		dudu.enrol(dancing);
@@ -105,7 +105,7 @@ class PersonTest {
 		Subject chacha = new Subject("Chacha stuff", "CHCH9999", 50);
 		
 		assertThrows(IllegalArgumentException.class, () -> {
-			new Subject("FOobar", "rjeit3495", 0);
+			new Subject("FOobar", "rjeit3495", 0); //credit points must be at least 1
 		});
 		
 		Student jackdon = new Student("Jackdon", Person.Gender.Male, 24);
@@ -118,7 +118,7 @@ class PersonTest {
 		aiai.enrol(chacha);
 		
 		assertThrows(IllegalStateException.class, () -> {
-			momo.getAverageGrade();
+			momo.getAverageGrade(); // momo has no students that have completed the subject
 		});
 		
 		assertSetEquals(Arrays.asList(jackdon), freya.getClassmates(momo));
@@ -133,6 +133,45 @@ class PersonTest {
 		
 		assertEquals(85, momo.getAverageGrade());
 		assertEquals(95, chacha.getAverageGrade());
+	}
+	
+	@Test
+	void testUniversity() {
+		University usyd = new University("University of Sydney");
+		Subject momo = new Subject("Momo stuff", "MOMO9999", 50);
+		Subject chacha = new Subject("Chacha stuff", "CHCH9999", 50);
+		Student jackdon = new Student("Jackdon", Person.Gender.Male, 24);
+		Student freya = new Student("Freya", Person.Gender.Female, 23);
+		
+		usyd.addSubject(momo);
+		usyd.addSubject(chacha);
+		
+		usyd.enrol(jackdon);
+		usyd.enrol(freya);
+		usyd.enrol(freya); //nothing happens
+		
+		usyd.enrol(jackdon, chacha);
+		usyd.enrol(freya, momo);
+		usyd.enrol(freya, chacha);
+		usyd.enrol(freya, chacha); //nothing happens
+		
+		Subject peel = new Subject("Peel peel", "PEEL0101", 6);
+		assertThrows(IllegalStateException.class, () -> {
+			usyd.enrol(jackdon, peel); //peel isnt taught by the uni
+		});
+		assertThrows(IllegalStateException.class, () -> {
+			usyd.complete(jackdon, momo, 60); //jackdon isnt currently enrolled in momo
+		});
+		assertThrows(IllegalArgumentException.class, () -> {
+			usyd.complete(jackdon, chacha, -1); //grade must be between 0 and 100
+		});
+		
+		usyd.complete(jackdon, chacha, 1);
+		usyd.complete(freya, momo, 1);
+		
+		assertThrows(IllegalStateException.class, () -> {
+			usyd.complete(freya, momo, 60); // freya is no longer studying momo
+		});
 	}
 
 }
