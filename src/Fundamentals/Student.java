@@ -8,11 +8,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-public class Student extends Person {
+public abstract class Student extends Person {
 	private Set<Subject> currentlyStudying;
 	private Map<Subject, Integer> finishedStudying;
 	
-	public Student(String name, Person.Gender gender, int age) {
+	protected Student(String name, Person.Gender gender, int age) {
 		super(name, gender, age);
 		currentlyStudying = new LinkedHashSet<>();
 		finishedStudying = new LinkedHashMap<>();
@@ -24,12 +24,14 @@ public class Student extends Person {
 		return subjects;
 	}
 	
-	void enrol(Subject subject) {
-		if(currentlyStudying.contains(subject)) {
+	void enrol(Subject subject) {		
+		if(!canEnrol(subject)) {
+			throw new IllegalArgumentException(String.format("%s can't enrol in %s", getName(), subject.toString()));
+		} else if(currentlyStudying.contains(subject)) {
 			throw new IllegalStateException(String.format("%s is already studying %s", getName(), subject));
 		} else if(finishedStudying.keySet().contains(subject)) {
 			throw new IllegalStateException(String.format("%s has already completed %s", getName(), subject));
-		}
+		} 
 		
 		currentlyStudying.add(subject);
 		subject.enrolledStudents.add(this);
@@ -94,9 +96,17 @@ public class Student extends Person {
 		return currentlyStudying.contains(subject);
 	}
 	
+	public int getCompletedCP() {
+		return finishedStudying.keySet().stream()
+			.mapToInt(subject -> subject.creditPoints)
+			.sum();
+	}
+	
 	@Override
 	public String toString() {
 		return super.toString() + " and studies " + currentlyStudying.toString();
 	}
+	
+	protected abstract boolean canEnrol(Subject subject);
 	
 }

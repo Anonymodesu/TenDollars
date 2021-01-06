@@ -24,7 +24,7 @@ public class University {
 	
 	public void enrol(Student student, Subject subject) {
 		if(!subjects.contains(subject)) {
-			throw new IllegalStateException("%s is not taught by %as");
+			throw new IllegalStateException(String.format("%s is not taught by %s", subject.name, this.name));
 			
 		} else if(!student.currentlyStudies(subject)) {
 			student.enrol(subject);

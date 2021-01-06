@@ -1,4 +1,4 @@
-	package Fundamentals;
+package Fundamentals;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -7,6 +7,14 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.junit.jupiter.api.Test;
+
+import Fundamentals.Students.BachelorsStudent;
+import Fundamentals.Students.HonoursStudent;
+import Fundamentals.Students.MastersStudent;
+import Fundamentals.Students.PhdStudent;
+import Fundamentals.Subjects.PostgradSubject;
+import Fundamentals.Subjects.ResearchSubject;
+import Fundamentals.Subjects.UndergradSubject;
 
 class PersonTest {
 	
@@ -60,13 +68,13 @@ class PersonTest {
 	
 	@Test
 	void testStudent() {
-		Subject singing = new Subject("Singing", "SING1011", 1);
-		Subject dancing = new Subject("Dancing", "DANC1011", 2);
-		Subject playing = new Subject("Playing Video Games", "PLAY1011", 3);
-		Subject watching = new Subject("Watching Stupid Videos", "WACH1011", 4);
-		Subject cooking = new Subject("Cooking", "COOK1011", 6);
+		Subject singing = new UndergradSubject("Singing", "SING1011", 1);
+		Subject dancing = new UndergradSubject("Dancing", "DANC1011", 2);
+		Subject playing = new UndergradSubject("Playing Video Games", "PLAY1011", 3);
+		Subject watching = new UndergradSubject("Watching Stupid Videos", "WACH1011", 4);
+		Subject cooking = new UndergradSubject("Cooking", "COOK1011", 6);
 		
-		Student dudu = new Student("Dudu", Person.Gender.Male, 3);
+		Student dudu = new BachelorsStudent("Dudu", Person.Gender.Male, 3);
 		dudu.enrol(singing);
 		
 		assertThrows(IllegalStateException.class, () -> {
@@ -101,16 +109,16 @@ class PersonTest {
 	
 	@Test
 	void testSubject() {
-		Subject momo = new Subject("Momo stuff", "MOMO9999", 50);
-		Subject chacha = new Subject("Chacha stuff", "CHCH9999", 50);
+		Subject momo = new UndergradSubject("Momo stuff", "MOMO9999", 50);
+		Subject chacha = new UndergradSubject("Chacha stuff", "CHCH9999", 50);
 		
 		assertThrows(IllegalArgumentException.class, () -> {
-			new Subject("FOobar", "rjeit3495", 0); //credit points must be at least 1
+			new UndergradSubject("FOobar", "rjeit3495", 0); //credit points must be at least 1
 		});
 		
-		Student jackdon = new Student("Jackdon", Person.Gender.Male, 24);
-		Student freya = new Student("Freya", Person.Gender.Female, 23);
-		Student aiai = new Student("Jackdon", Person.Gender.Female, 25);
+		Student jackdon = new BachelorsStudent("Jackdon", Person.Gender.Male, 24);
+		Student freya = new BachelorsStudent("Freya", Person.Gender.Female, 23);
+		Student aiai = new BachelorsStudent("Jackdon", Person.Gender.Female, 25);
 		
 		jackdon.enrol(momo);
 		freya.enrol(momo);
@@ -138,10 +146,10 @@ class PersonTest {
 	@Test
 	void testUniversity() {
 		University usyd = new University("University of Sydney");
-		Subject momo = new Subject("Momo stuff", "MOMO9999", 50);
-		Subject chacha = new Subject("Chacha stuff", "CHCH9999", 50);
-		Student jackdon = new Student("Jackdon", Person.Gender.Male, 24);
-		Student freya = new Student("Freya", Person.Gender.Female, 23);
+		Subject momo = new UndergradSubject("Momo stuff", "MOMO9999", 50);
+		Subject chacha = new UndergradSubject("Chacha stuff", "CHCH9999", 50);
+		Student jackdon = new BachelorsStudent("Jackdon", Person.Gender.Male, 24);
+		Student freya = new BachelorsStudent("Freya", Person.Gender.Female, 23);
 		
 		usyd.addSubject(momo);
 		usyd.addSubject(chacha);
@@ -155,7 +163,7 @@ class PersonTest {
 		usyd.enrol(freya, chacha);
 		usyd.enrol(freya, chacha); //nothing happens
 		
-		Subject peel = new Subject("Peel peel", "PEEL0101", 6);
+		Subject peel = new UndergradSubject("Peel peel", "PEEL0101", 6);
 		assertThrows(IllegalStateException.class, () -> {
 			usyd.enrol(jackdon, peel); //peel isnt taught by the uni
 		});
@@ -170,7 +178,57 @@ class PersonTest {
 		usyd.complete(freya, momo, 1);
 		
 		assertThrows(IllegalStateException.class, () -> {
-			usyd.complete(freya, momo, 60); // freya is no longer studying momo
+			usyd.enrol(freya, momo); // freya has already completed momo
+		});
+		
+	}
+	
+	@Test
+	void testVisitor() {
+		Student meimei = new BachelorsStudent("Meimei", Person.Gender.Female, 22);
+		Student jackdon = new HonoursStudent("Jackdon", Person.Gender.Male, 24);
+		Student freya = new MastersStudent("Freya", Person.Gender.Female, 23);
+		Student dudu = new PhdStudent("Dudu", Person.Gender.Male, 3);
+		
+		Subject ug = new UndergradSubject("foobar", "foobar", 144);
+		Subject pg = new PostgradSubject("blah", "blah", 2);
+		Subject rs = new ResearchSubject("kuku", "kuku", 4);
+		
+		// bachelors students can only enrol in undergrad subjects
+		meimei.enrol(ug);
+		assertThrows(IllegalArgumentException.class, () -> {
+			meimei.enrol(pg);
+		});
+		
+		// hons students can only enrol in postgrad subjects if they have lots of CP and WAM
+		assertThrows(IllegalArgumentException.class, () -> {
+			jackdon.enrol(rs);
+		});
+		assertThrows(IllegalArgumentException.class, () -> {
+			jackdon.enrol(pg);
+		});
+		jackdon.enrol(ug);
+		assertThrows(IllegalArgumentException.class, () -> {
+			jackdon.enrol(pg);
+		});
+		jackdon.complete(ug, 75);
+		jackdon.enrol(pg);
+		
+		// masters students can only enrol in research subjects if they have lots of WAM
+		assertThrows(IllegalArgumentException.class, () -> {
+			freya.enrol(rs);
+		});
+		freya.enrol(pg);
+		assertThrows(IllegalArgumentException.class, () -> {
+			freya.enrol(rs);
+		});
+		freya.complete(pg, 65);
+		freya.enrol(rs);
+		
+		// phd students can only enrol in research subjects
+		dudu.enrol(rs);
+		assertThrows(IllegalArgumentException.class, () -> {
+			freya.enrol(ug);
 		});
 	}
 

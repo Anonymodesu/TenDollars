@@ -1,36 +1,78 @@
 package Fundamentals;
 
-import java.util.TimerTask;
-
+//simple example of the visitor design pattern
 public class HelloWorld {
-	private static class Freya {
+	
+	// the MachineLearningAlgorithm provides a method to use a particular loss function
+	private static interface MachineLearningAlgorithm {
+		void accept(LossFunction a);
+	}
+	
+	private static class CNN implements MachineLearningAlgorithm {
+		
+		@Override
+		public void accept(LossFunction x) {
+			System.out.println(x.visit(this));
+		}
 		
 	}
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub		
-//		Double a = 0.0;
-//		Double b = 1.0;
-//		Double c = 1.0;
-//		
-//		System.out.println(b == c);
-//		System.out.println(a + b == b);
-//		System.out.println(a + b == c);
-//		
-//		System.out.println(b.equals(c));
-//		System.out.println(b.equals((a + b)));
-//		System.out.println(c.equals((a + b)));
+	
+	private static class LinearRegression implements MachineLearningAlgorithm {
 		
-		TimerTask callback = new TimerTask() {
-			@Override
-			public void run() {
-				System.out.println("Task finished");
-			}
+		@Override
+		public void accept(LossFunction x) {
+			System.out.println(x.visit(this));
+		}
+		
+	}
+	
+	// we can add any number of visit() function declarations in this interface
+	// i.e. we can define any number of loss functions without modifying any classes implementing MachineLearningAlgorithm classes 
+	private static interface LossFunction {
+		String visit(CNN j);
+		String visit(LinearRegression j);
+	}
+		
+		
+	private static class CrossEntropy implements LossFunction {
+
+		@Override
+		public String visit(CNN j) {
+			return "CNN with CrossEntropy loss";
+		}
 			
-		};
-				
-		new java.util.Timer().schedule(callback, 1000);
+		@Override
+		public String visit(LinearRegression d) {
+			return "Linear Regression with CrossEntropy loss";
+		}
+			
+	}
 		
-		System.out.println("Other things");
+	private static class MeanAbsoluteError implements LossFunction {
+
+		@Override
+		public String visit(CNN j) {
+			return "CNN with Mean Absolute Error";
+		}
+			
+		@Override
+		public String visit(LinearRegression d) {
+			return "Linear Regression with Mean Absolute Error";
+		}
+			
+	}
+	
+	public static void main(String[] args) {
+		
+		MachineLearningAlgorithm cnn = new CNN();
+		MachineLearningAlgorithm dudu = new LinearRegression();
+		LossFunction freya = new CrossEntropy();
+		LossFunction meimei = new MeanAbsoluteError();
+		
+		cnn.accept(freya);
+		cnn.accept(meimei);
+		dudu.accept(freya);
+		dudu.accept(meimei);
 	}
 
 }

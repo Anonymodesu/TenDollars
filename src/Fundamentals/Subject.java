@@ -7,14 +7,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Subject {
+import Fundamentals.Students.BachelorsStudent;
+import Fundamentals.Students.HonoursStudent;
+import Fundamentals.Students.MastersStudent;
+import Fundamentals.Students.PhdStudent;
+
+public abstract class Subject {
 	final String name;
 	final String code;
 	final int creditPoints;
 	final Set<Student> enrolledStudents;
 	final Map<Student, Integer> finishedStudents;
 	
-	Subject(String name, String code, int creditPoints) {
+	protected Subject(String name, String code, int creditPoints) {
 		if(creditPoints < 1) {
 			throw new IllegalArgumentException(String.format("%s has fewer than 1 credit point", name));
 		}
@@ -40,7 +45,6 @@ public class Subject {
 			throw new IllegalStateException(String.format("No students have finished %s", name));
 		}
 		
-		
 		return finishedStudents.values()
 				.stream()
 				.mapToDouble(a -> a)
@@ -48,5 +52,9 @@ public class Subject {
 				.getAsDouble();
 	}
 	
+	public abstract boolean canEnrol(BachelorsStudent student);
+	public abstract boolean canEnrol(HonoursStudent student);
+	public abstract boolean canEnrol(MastersStudent student);
+	public abstract boolean canEnrol(PhdStudent student);
 	
 }
