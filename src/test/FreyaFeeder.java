@@ -64,13 +64,19 @@ public class FreyaFeeder {
 		System.out.println("Please enter Freya's dudu size");
 		Integer duduSize = null;
 		
-		while(duduSize == null) {
+		while(duduSize == null || duduSize < 1) {
 			String input = userInput.nextLine();
 			
 			try {
 				duduSize = Integer.parseInt(input);
+				
+				if(duduSize < 1) {
+					throw new IllegalArgumentException("Freya's dudu size must be larger than 0");
+				}
 			} catch(NumberFormatException e) {
 				System.out.println(input + " is not an integer");
+			} catch(IllegalArgumentException e) {
+				System.out.println(e.getMessage());
 			}
 		}
 		
