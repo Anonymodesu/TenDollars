@@ -128,5 +128,31 @@ class ExternalTesting {
 		assertEquals(geiQianRen, aiai.getTeacher());
 		assertTrue(maomao.getTaughtSubjects().isEmpty());
 		assertTrue(ladao.getSupervisedStudents().isEmpty());
+		
+		// professors cant supervise more than 4 people
+		MastersStudent a = new MastersStudent("a", Person.Gender.Female, 23);
+		MastersStudent b = new MastersStudent("b", Person.Gender.Female, 23);
+		MastersStudent c = new MastersStudent("c", Person.Gender.Female, 23);
+		usyd.enrol(a);
+		usyd.enrol(b);
+		usyd.enrol(c);
+		usyd.supervise(maomao, a);
+		usyd.supervise(maomao, b);
+		assertThrows(IllegalStateException.class, () -> {
+			usyd.supervise(maomao, c);
+		});
+		
+		// professors cant teach more than 3 subjects
+		Subject cooking = new UndergradSubject("Cooking", "COOK0101", 6);
+		Subject dancing = new PostgradSubject("Dancing", "DANC0101", 6);
+		usyd.addSubject(cooking);
+		usyd.addSubject(dancing);
+		usyd.teach(maomao, cooking);
+		usyd.teach(maomao, dancing);
+		usyd.teach(maomao, qinqin);
+		assertThrows(IllegalStateException.class, () -> {
+			usyd.teach(maomao, aiai);
+		});
+		
 	}
 }
