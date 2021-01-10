@@ -1,7 +1,4 @@
-package Fundamentals.Students;
-
-import Fundamentals.Student;
-import Fundamentals.Subject;
+package Fundamentals;
 
 public class BachelorsStudent extends Student {
 

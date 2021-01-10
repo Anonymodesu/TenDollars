@@ -1,10 +1,4 @@
-package Fundamentals.Subjects;
-
-import Fundamentals.Subject;
-import Fundamentals.Students.BachelorsStudent;
-import Fundamentals.Students.HonoursStudent;
-import Fundamentals.Students.MastersStudent;
-import Fundamentals.Students.PhdStudent;
+package Fundamentals;
 
 public class PostgradSubject extends Subject {
 
@@ -22,14 +16,14 @@ public class PostgradSubject extends Subject {
 
 	@Override
 	public boolean canEnrol(HonoursStudent student) {
-		boolean ret;
+		boolean eligible;
 		try {
-			ret = student.getWAM() >= HONS_REQUIRED_WAM && 
+			eligible = student.getWAM() >= HONS_REQUIRED_WAM && 
 					student.getCompletedCP() >= HONS_REQUIRED_CP;
 		} catch(IllegalStateException e) {
-			ret = false;
+			eligible = false;
 		}
-		return ret;
+		return eligible;
 	}
 
 	@Override

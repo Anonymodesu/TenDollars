@@ -8,14 +8,6 @@ import java.util.HashSet;
 
 import org.junit.jupiter.api.Test;
 
-import Fundamentals.Students.BachelorsStudent;
-import Fundamentals.Students.HonoursStudent;
-import Fundamentals.Students.MastersStudent;
-import Fundamentals.Students.PhdStudent;
-import Fundamentals.Subjects.PostgradSubject;
-import Fundamentals.Subjects.ResearchSubject;
-import Fundamentals.Subjects.UndergradSubject;
-
 class PersonTest {
 	
 	private <T> void assertSetEquals(Collection<T> expected, Collection<T> actual) {
@@ -72,7 +64,7 @@ class PersonTest {
 		Subject dancing = new UndergradSubject("Dancing", "DANC1011", 2);
 		Subject playing = new UndergradSubject("Playing Video Games", "PLAY1011", 3);
 		Subject watching = new UndergradSubject("Watching Stupid Videos", "WACH1011", 4);
-		Subject cooking = new UndergradSubject("Cooking", "COOK1011", 6);
+		Subject cooking = new  UndergradSubject("Cooking", "COOK1011", 6);
 		
 		Student dudu = new BachelorsStudent("Dudu", Person.Gender.Male, 3);
 		dudu.enrol(singing);
@@ -144,51 +136,15 @@ class PersonTest {
 	}
 	
 	@Test
-	void testUniversity() {
-		University usyd = new University("University of Sydney");
-		Subject momo = new UndergradSubject("Momo stuff", "MOMO9999", 50);
-		Subject chacha = new UndergradSubject("Chacha stuff", "CHCH9999", 50);
-		Student jackdon = new BachelorsStudent("Jackdon", Person.Gender.Male, 24);
-		Student freya = new BachelorsStudent("Freya", Person.Gender.Female, 23);
-		
-		usyd.addSubject(momo);
-		usyd.addSubject(chacha);
-		
-		usyd.enrol(jackdon);
-		usyd.enrol(freya);
-		usyd.enrol(freya); //nothing happens
-		
-		usyd.enrol(jackdon, chacha);
-		usyd.enrol(freya, momo);
-		usyd.enrol(freya, chacha);
-		usyd.enrol(freya, chacha); //nothing happens
-		
-		Subject peel = new UndergradSubject("Peel peel", "PEEL0101", 6);
-		assertThrows(IllegalStateException.class, () -> {
-			usyd.enrol(jackdon, peel); //peel isnt taught by the uni
-		});
-		assertThrows(IllegalStateException.class, () -> {
-			usyd.complete(jackdon, momo, 60); //jackdon isnt currently enrolled in momo
-		});
-		assertThrows(IllegalArgumentException.class, () -> {
-			usyd.complete(jackdon, chacha, -1); //grade must be between 0 and 100
-		});
-		
-		usyd.complete(jackdon, chacha, 1);
-		usyd.complete(freya, momo, 1);
-		
-		assertThrows(IllegalStateException.class, () -> {
-			usyd.enrol(freya, momo); // freya has already completed momo
-		});
-		
-	}
-	
-	@Test
 	void testVisitor() {
 		Student meimei = new BachelorsStudent("Meimei", Person.Gender.Female, 22);
 		Student jackdon = new HonoursStudent("Jackdon", Person.Gender.Male, 24);
-		Student freya = new MastersStudent("Freya", Person.Gender.Female, 23);
-		Student dudu = new PhdStudent("Dudu", Person.Gender.Male, 3);
+		MastersStudent freya = new MastersStudent("Freya", Person.Gender.Female, 23);
+		PhdStudent dudu = new PhdStudent("Dudu", Person.Gender.Male, 3);
+		
+		Professor qinqin = new Professor("Qinqin", Person.Gender.Female, 10);
+		qinqin.supervise(freya);
+		qinqin.supervise(dudu);
 		
 		Subject ug = new UndergradSubject("foobar", "foobar", 144);
 		Subject pg = new PostgradSubject("blah", "blah", 2);
@@ -231,5 +187,6 @@ class PersonTest {
 			freya.enrol(ug);
 		});
 	}
+
 
 }

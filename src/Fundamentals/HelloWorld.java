@@ -1,5 +1,7 @@
 package Fundamentals;
 
+import java.util.Scanner;
+
 //simple example of the visitor design pattern
 public class HelloWorld {
 	
@@ -73,6 +75,15 @@ public class HelloWorld {
 		cnn.accept(meimei);
 		dudu.accept(freya);
 		dudu.accept(meimei);
+		
+		Scanner in = new Scanner(System.in);
+		in.useDelimiter("");
+		while(in.hasNext()) {
+			char ch = in.next().charAt(0);
+			boolean classifier = Character.isDigit(ch);
+			System.out.println(ch + "<->" + (int)ch + "<->" + classifier);
+		}
+		in.close();
 	}
 
 }

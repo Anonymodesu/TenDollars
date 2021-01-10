@@ -1,10 +1,4 @@
-package Fundamentals.Subjects;
-
-import Fundamentals.Subject;
-import Fundamentals.Students.BachelorsStudent;
-import Fundamentals.Students.HonoursStudent;
-import Fundamentals.Students.MastersStudent;
-import Fundamentals.Students.PhdStudent;
+package Fundamentals;
 
 public class UndergradSubject extends Subject {
 

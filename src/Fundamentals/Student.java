@@ -24,7 +24,7 @@ public abstract class Student extends Person {
 		return subjects;
 	}
 	
-	void enrol(Subject subject) {		
+	protected void enrol(Subject subject) {		
 		if(!canEnrol(subject)) {
 			throw new IllegalArgumentException(String.format("%s can't enrol in %s", getName(), subject.toString()));
 		} else if(currentlyStudying.contains(subject)) {
@@ -37,7 +37,7 @@ public abstract class Student extends Person {
 		subject.enrolledStudents.add(this);
 	}
 	
-	void complete(Subject subject, int grade) {
+	protected void complete(Subject subject, int grade) {
 		if(!currentlyStudying.contains(subject)) {
 			throw new IllegalStateException(String.format("%s isn't studying %s", getName(), subject));
 		} else if(grade < 0 || grade > 100) {
@@ -90,6 +90,12 @@ public abstract class Student extends Person {
 		}
 		students.remove(this);
 		return new ArrayList<Student>(students);
+	}
+	
+	public List<Teacher> getTeachers() {
+		Set<Teacher> teachers = new LinkedHashSet<Teacher>();
+		this.currentlyStudying.forEach(subject -> teachers.add(subject.teacher));
+		return new ArrayList<>(teachers);
 	}
 	
 	public boolean currentlyStudies(Subject subject) {

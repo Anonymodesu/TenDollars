@@ -1,10 +1,4 @@
-package Fundamentals.Subjects;
-
-import Fundamentals.Subject;
-import Fundamentals.Students.BachelorsStudent;
-import Fundamentals.Students.HonoursStudent;
-import Fundamentals.Students.MastersStudent;
-import Fundamentals.Students.PhdStudent;
+package Fundamentals;
 
 public class ResearchSubject extends Subject {
 
@@ -26,18 +20,19 @@ public class ResearchSubject extends Subject {
 
 	@Override
 	public boolean canEnrol(MastersStudent student) {
-		boolean ret;
+		boolean eligible;
 		try {
-			ret = student.getWAM() >= MASTERS_REQUIRED_WAM;
+			eligible = student.getWAM() >= MASTERS_REQUIRED_WAM;
 		} catch(IllegalStateException e) {
-			ret = false;
+			eligible = false;
 		}
-		return ret;
+		return eligible && student.getSupervisor() != null;
 	}
 
 	@Override
 	public boolean canEnrol(PhdStudent student) {
-		return true;
+		return student.getSupervisor() != null;
 	}
+	
 
 }

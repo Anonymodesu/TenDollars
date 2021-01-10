@@ -7,17 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import Fundamentals.Students.BachelorsStudent;
-import Fundamentals.Students.HonoursStudent;
-import Fundamentals.Students.MastersStudent;
-import Fundamentals.Students.PhdStudent;
-
 public abstract class Subject {
 	final String name;
 	final String code;
 	final int creditPoints;
 	final Set<Student> enrolledStudents;
 	final Map<Student, Integer> finishedStudents;
+	Teacher teacher;
 	
 	protected Subject(String name, String code, int creditPoints) {
 		if(creditPoints < 1) {
@@ -29,6 +25,7 @@ public abstract class Subject {
 		this.creditPoints = creditPoints;
 		this.enrolledStudents = new LinkedHashSet<>();
 		this.finishedStudents = new LinkedHashMap<>();
+		teacher = null;
 	}
 	
 	@Override
@@ -50,6 +47,10 @@ public abstract class Subject {
 				.mapToDouble(a -> a)
 				.average()
 				.getAsDouble();
+	}
+	
+	public Teacher getTeacher() {
+		return teacher;
 	}
 	
 	public abstract boolean canEnrol(BachelorsStudent student);
