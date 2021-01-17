@@ -147,4 +147,22 @@ public class Person {
 		addToTree.accept(mother);
 		children.forEach(addToTree);
 	}
+	
+	public ArrayList<ArrayList<Person>> getFreyaDescendants() {
+		ArrayList<ArrayList<Person>> descendants = new ArrayList<>();
+		ArrayList<Person> generation = new ArrayList<>();
+		ArrayList<Person> childrenGeneration = new ArrayList<>();
+		
+		generation.add(this);
+		descendants.add(generation);
+		
+		for(Person person: generation) {
+			System.out.println(generation); //generation doesnt change
+			childrenGeneration.addAll(person.children);
+			descendants.add(childrenGeneration);
+			generation = childrenGeneration;
+		}
+		
+		return descendants;
+	}
 }

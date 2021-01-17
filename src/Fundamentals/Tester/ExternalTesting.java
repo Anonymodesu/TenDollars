@@ -331,4 +331,46 @@ class ExternalTesting {
 		assertEquals(81, tengteng5.getGrade(stuff));
 	}
 	
+	void testCallbacks() {
+		University usyd = new University("University of Sydney");
+		Student studentA = new BachelorsStudent("A", Person.Gender.Male, 1);
+		Student studentB = new BachelorsStudent("B", Person.Gender.Male, 1);
+		Professor profA = new Professor("A", Person.Gender.Male, 1);
+		Professor profB = new Professor("B", Person.Gender.Male, 1);
+		Subject subjA = new UndergradSubject("A", "A", 6);
+		Subject subjB = new UndergradSubject("B", "B", 6);
+		Subject subjC = new UndergradSubject("C", "C", 6);
+		
+		usyd.employ(profA);
+		usyd.employ(profB);
+		
+		usyd.addSubject(subjA);
+		usyd.addSubject(subjB);
+		usyd.addSubject(subjC);
+		
+		usyd.teach(profA, subjA);
+		usyd.teach(profA, subjB);
+		usyd.teach(profB, subjC);
+		
+		usyd.enrol(studentA, subjA);
+		usyd.enrol(studentA, subjC);
+		usyd.enrol(studentA, subjB);
+		usyd.enrol(studentB, subjA);
+		usyd.enrol(studentB, subjB);
+		usyd.enrol(studentB, subjC);
+		
+		usyd.complete(studentA, subjA, 100);
+		usyd.complete(studentA, subjB, 0);
+		usyd.complete(studentA, subjC, 30);
+		usyd.complete(studentB, subjA, 90);
+		usyd.complete(studentB, subjB, 50);
+		usyd.complete(studentB, subjC, 30);
+		
+		assertEquals(studentB, usyd.getBestStudent());
+		assertEquals(studentA, usyd.getWorstStudent());
+		assertEquals(subjA, usyd.getEasiestSubject());
+		assertEquals(subjB, usyd.getHardestSubject());
+		assertEquals(profA, usyd.getMostLenientTeacher());
+		assertEquals(profB, usyd.getStrictestTeacher());
+	}
 }
