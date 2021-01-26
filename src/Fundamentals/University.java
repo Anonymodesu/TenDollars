@@ -35,6 +35,9 @@ public class University {
 	}
 	
 	public void complete(Student student, Subject subject, int grade) {
+		if(subject.teacher != null) {
+			grade = subject.teacher.grade(subject, student, grade);
+		}
 		student.complete(subject, grade);
 	}
 	

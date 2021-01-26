@@ -2,11 +2,16 @@ package Fundamentals.Tester;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayDeque;
+import java.util.Queue;
+
 import org.junit.jupiter.api.Test;
 
 import Fundamentals.BachelorsStudent;
+import Fundamentals.Bias;
 import Fundamentals.MastersStudent;
 import Fundamentals.Person;
+import Fundamentals.Person.Gender;
 import Fundamentals.PhdStudent;
 import Fundamentals.PostgradSubject;
 import Fundamentals.Professor;
@@ -155,4 +160,175 @@ class ExternalTesting {
 		});
 		
 	}
+	
+	@Test
+	void testBias() {
+		University usyd = new University("University of Sydney");
+		Professor prof = new Professor("Mr Guy", Person.Gender.Male, 45);
+		Subject stuff = new PostgradSubject("Stuff", "STUF1101", 6);
+		usyd.addSubject(stuff);
+		usyd.employ(prof);
+		usyd.teach(prof, stuff);
+
+		//example a
+		prof.setBias((subject, student, grade) -> {
+			if(student.getGender() == Gender.Female) {
+				grade = grade + 1;
+			}
+			return Bias.restrictGrade(grade);
+		});
+		Student freya = new MastersStudent("Freya", Gender.Female, 23);
+		usyd.enrol(freya, stuff);
+		usyd.complete(freya, stuff, 80);
+		assertEquals(81, freya.getGrade(stuff));
+		
+		//example b
+		Subject mobile = new PostgradSubject("Mobile Computing", "INFO6000", 6);
+		usyd.addSubject(mobile);
+		prof.setBias((subject, student, grade) -> {
+			if(student.currentlyStudies(mobile) && student.getGender() == Gender.Male) {
+				grade += 1;
+			}
+			return Bias.restrictGrade(grade);
+		});
+		Student jackdon = new MastersStudent("Jackdon", Gender.Male, 24);
+		usyd.enrol(jackdon, mobile);
+		usyd.enrol(jackdon, stuff);
+		usyd.complete(jackdon, stuff, 80);
+		assertEquals(81, jackdon.getGrade(stuff));
+		
+		//example c
+		prof.setBias((subject, student, grade) -> {
+			if(subject.getStudents().size() < 10) {
+				grade++;
+			};
+			return Bias.restrictGrade(grade);
+		});
+		Student dudu = new MastersStudent("Dudu", Gender.Male, 5);
+		usyd.enrol(dudu, stuff);
+		usyd.complete(dudu, stuff, 80);
+		assertEquals(81, dudu.getGrade(stuff));
+		
+		//example d
+		prof.setBias((subject, student, grade) -> {
+			if(student instanceof MastersStudent || student instanceof PhdStudent) {
+				++grade;
+			};
+			return Bias.restrictGrade(grade);
+		});
+		Student kuku = new MastersStudent("KuKu", Gender.Male, 5);
+		usyd.enrol(kuku, stuff);
+		usyd.complete(kuku, stuff, 80);
+		assertEquals(81, kuku.getGrade(stuff));
+		
+		//example e
+		prof.setBias((subject, student, grade) -> {
+			try {
+				if(student.getWAM() > 70) {
+					grade = (int) (grade * 1.1);
+				}
+			} catch(IllegalStateException e) {}
+			
+			return Bias.restrictGrade(grade);
+		});
+		Student poopoo = new MastersStudent("Poo Poo", Gender.Male, 11115);
+		usyd.enrol(poopoo, stuff);
+		usyd.complete(poopoo, stuff, 80);
+		assertEquals(80, poopoo.getGrade(stuff));
+		prof.teach(mobile);
+		usyd.enrol(poopoo, mobile);
+		usyd.complete(poopoo, mobile, 80);
+		assertEquals(88, poopoo.getGrade(mobile));
+		
+		//example f
+		prof.setBias((subject, student, grade) -> {
+			if(prof.getSupervisedStudents().contains(student)) {
+				++grade;
+			};
+			return Bias.restrictGrade(grade);
+		});
+		MastersStudent baobao = new MastersStudent("Baobaooooo", Gender.Female, 52);
+		usyd.enrol(baobao, stuff);
+		usyd.supervise(prof, baobao);
+		usyd.complete(baobao, stuff, 80);
+		assertEquals(81, baobao.getGrade(stuff));
+		
+		//example g
+		prof.setBias((subject, student, grade) -> {
+			if(student.getAncestors().contains(prof)) {
+				grade++;
+			};
+			return Bias.restrictGrade(grade);
+		});
+		Student jiaojiao = new MastersStudent("Jiaojiao", Gender.Female, 23);
+		prof.setParentOf(jiaojiao);
+		usyd.enrol(jiaojiao, stuff);
+		usyd.complete(jiaojiao, stuff, 80);
+		assertEquals(81, jiaojiao.getGrade(stuff));
+		
+		
+		//example h
+		prof.setBias(new Bias() {
+			private int previousGrade = 0;
+			
+			@Override
+			public int influenceGrade(Subject subject, Student student, int grade) {
+				if(previousGrade > 70) {
+					grade++;
+				}
+				previousGrade = grade;
+				return Bias.restrictGrade(grade);
+			}
+		});
+		Student shuishui = new MastersStudent("Shuishui", Gender.Female, 23);
+		usyd.enrol(shuishui, stuff);
+		usyd.complete(shuishui, stuff, 80);
+		assertEquals(80, shuishui.getGrade(stuff));
+		usyd.enrol(shuishui, mobile);
+		usyd.complete(shuishui, mobile, 80);
+		assertEquals(81, shuishui.getGrade(mobile));
+		
+		//example i
+		prof.setBias(new Bias() {
+			private ArrayDeque<Integer> previousGrades = new ArrayDeque<>(3);
+			
+			@Override
+			public int influenceGrade(Subject subject, Student student, int grade) {
+				
+				if(!previousGrades.isEmpty() && 
+					previousGrades.stream().mapToDouble(e -> e).average().getAsDouble() > 70) {
+					grade++;
+				}
+				
+				if(previousGrades.size() == 3) {
+					previousGrades.removeLast();
+				}
+				previousGrades.addFirst(grade);
+				
+				return Bias.restrictGrade(grade);
+			}
+		});
+		// grade 5 students; 5th student will get the bonus because the sequence of grades is 0, 80, 80, 80, 80
+		Student tengteng1 = new MastersStudent("Tengteng 1", Gender.Female, 23);
+		usyd.enrol(tengteng1, stuff);
+		usyd.complete(tengteng1, stuff, 0);
+		assertEquals(0, tengteng1.getGrade(stuff));
+		Student tengteng2 = new MastersStudent("Tengteng 2", Gender.Female, 23);
+		usyd.enrol(tengteng2, stuff);
+		usyd.complete(tengteng2, stuff, 80);
+		assertEquals(80, tengteng2.getGrade(stuff));
+		Student tengteng3 = new MastersStudent("Tengteng 3", Gender.Female, 23);
+		usyd.enrol(tengteng3, stuff);
+		usyd.complete(tengteng3, stuff, 80);
+		assertEquals(80, tengteng3.getGrade(stuff));
+		Student tengteng4 = new MastersStudent("Tengteng 4", Gender.Female, 23);
+		usyd.enrol(tengteng4, stuff);
+		usyd.complete(tengteng4, stuff, 80);
+		assertEquals(80, tengteng4.getGrade(stuff));
+		Student tengteng5 = new MastersStudent("Tengteng 5", Gender.Female, 23);
+		usyd.enrol(tengteng5, stuff);
+		usyd.complete(tengteng5, stuff, 80);
+		assertEquals(81, tengteng5.getGrade(stuff));
+	}
+	
 }

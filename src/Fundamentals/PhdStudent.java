@@ -9,11 +9,13 @@ public class PhdStudent extends Student implements Supervisable, Teacher {
 
 	private Professor supervisor;
 	private Set<Subject> taughtSubjects;
+	private Bias bias;
 	
 	public PhdStudent(String name, Gender gender, int age) {
 		super(name, gender, age);
 		supervisor = null;
 		taughtSubjects = new LinkedHashSet<>();
+		bias = (subject, student, grade) -> grade;
 	}
 	
 	@Override
@@ -60,6 +62,16 @@ public class PhdStudent extends Student implements Supervisable, Teacher {
 	@Override
 	public List<Subject> getTaughtSubjects() {
 		return new ArrayList<>(taughtSubjects);
+	}
+
+	@Override
+	public void setBias(Bias bias) {
+		this.bias = bias;
+	}
+
+	@Override
+	public int grade(Subject subject, Student student, int grade) {
+		return bias.influenceGrade(subject, student, grade);
 	}
 
 }

@@ -11,11 +11,13 @@ public class Professor extends Person implements Teacher {
 	
 	private Set<Subject> subjects;
 	private Set<Supervisable> supervisees;
+	private Bias bias;
 	
 	public Professor(String name, Gender gender, int age) {
 		super(name, gender, age);
 		subjects = new LinkedHashSet<>(MAX_SUBJECTS);
 		supervisees = new LinkedHashSet<>(MAX_SUPERVISEES);
+		bias = (subject, student, grade) -> grade;
 	}
 
 	@Override
@@ -74,6 +76,16 @@ public class Professor extends Person implements Teacher {
 		} else {
 			throw new IllegalStateException(String.format("%s can't supervise more than %d students", getName(), MAX_SUPERVISEES));
 		}
+	}
+
+	@Override
+	public void setBias(Bias bias) {
+		this.bias = bias;
+	}
+
+	@Override
+	public int grade(Subject subject, Student student, int grade) {
+		return bias.influenceGrade(subject, student, grade);
 	}
 
 }

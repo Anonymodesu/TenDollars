@@ -50,6 +50,10 @@ public class Person {
 		return name;
 	}
 	
+	public Gender getGender() {
+		return gender;
+	}
+	
 	@Override
 	public String toString() {
 		return String.format("%s is %d years old", name, age);
